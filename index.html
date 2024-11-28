@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enviar Arquivo por E-mail</title>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    form {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    form h2 {
+      margin-bottom: 20px;
+    }
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    form input, form button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    form button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    form button:hover {
+      background-color: #0056b3;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <form id="emailForm">
+    <h2>Enviar Arquivo por E-mail</h2>
+    <label for="user_name">Seu Nome</label>
+    <input type="text" id="user_name" name="user_name" required placeholder="Digite seu nome">
+
+    <label for="user_email">Seu E-mail</label>
+    <input type="email" id="user_email" name="user_email" required placeholder="Digite seu e-mail">
+
+    <label for="file">Selecione um Arquivo</label>
+    <input type="file" id="file" name="file" required>
+
+    <button type="button" id="sendButton">Enviar</button>
+
+    <div class="status" id="status"></div>
+  </form>
+
+  <script>
+    // Inicializa o EmailJS com sua chave pública
+    emailjs.init("u4fUcSd9Yi3exmOiv");  // Substitua 'YOUR_USER_ID' pela sua chave pública do EmailJS
+
+    document.getElementById("sendButton").addEventListener("click", function () {
+      const statusDiv = document.getElementById("status");
+      const fileInput = document.getElementById("file");
+
+      // Verifica se o arquivo está selecionado
+      if (fileInput.files.length === 0) {
+        statusDiv.textContent = "Por favor, selecione um arquivo.";
+        statusDiv.style.color = "red";
+        return;
+      }
+
+      // Cria o formulário de dados para enviar
+      const formData = new FormData();
+      formData.append("user_name", document.getElementById("user_name").value);
+      formData.append("user_email", document.getElementById("user_email").value);
+      formData.append("file", fileInput.files[0]);
+
+      statusDiv.textContent = "Enviando...";
+
+      // Envia o formulário usando EmailJS
+      emailjs.sendForm("service_qeqs8rl", "template_gi6qr30", formData)  // Substitua 'YOUR_SERVICE_ID' e 'YOUR_TEMPLATE_ID'
+        .then(() => {
+          statusDiv.textContent = "E-mail enviado com sucesso!";
+          statusDiv.style.color = "green";
+          document.getElementById("emailForm").reset();
+        })
+        .catch((error) => {
+          console.error("Erro:", error);
+          statusDiv.textContent = "Erro ao enviar o e-mail. Tente novamente.";
+          statusDiv.style.color = "red";
+        });
+    });
+  </script>
+</body>
+</html>
