@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enviar Arquivo por E-mail</title>
+  <title>Envio de Documentos via WhatsApp</title>
   
-  <!-- Include the EmailJS SDK -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Include Material Design Stylesheets -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@material-ui/core@5.0.0-alpha.31/dist/material-ui.min.css" rel="stylesheet" />
+
+  <!-- Include Material Design JS for Button -->
+  <script src="https://cdn.jsdelivr.net/npm/@material-ui/core@5.0.0-alpha.31/dist/material-ui.min.js"></script>
 
   <style>
     body {
@@ -15,102 +19,171 @@
       padding: 20px;
       background-color: #f4f4f9;
     }
-    form {
-      max-width: 500px;
-      margin: 0 auto;
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-container {
+      max-width: 600px;
+      width: 100%;
       background: #fff;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    form h2 {
+
+    .form-container h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .file-input {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin-bottom: 20px;
     }
-    form label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+
+    .file-input input[type="file"] {
+      display: none;
     }
-    form input, form button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    form button {
+
+    .file-input label {
       background-color: #007bff;
-      color: #fff;
-      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .file-list {
+      width: 100%;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .file-list li {
+      padding: 10px;
+      background-color: #f1f1f1;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .file-list li button {
+      background-color: red;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
       cursor: pointer;
     }
-    form button:hover {
-      background-color: #0056b3;
+
+    .file-list li button:hover {
+      background-color: darkred;
     }
+
     .status {
-      margin-top: 10px;
-      font-size: 14px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .whatsapp-button {
+      background-color: #25D366;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      font-size: 16px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .whatsapp-button:hover {
+      background-color: #128C7E;
     }
   </style>
 </head>
 <body>
 
-  <!-- Email Form -->
-  <form id="emailForm">
-    <h2>Enviar Arquivo por E-mail</h2>
+  <div class="container">
+    <div class="form-container">
+      <h2>Envio de Documentos via WhatsApp</h2>
 
-    <label for="user_name">Seu Nome</label>
-    <input type="text" id="user_name" name="user_name" required placeholder="Digite seu nome">
+      <div class="file-input">
+        <label for="fileUpload">Selecione até 10 Documentos</label>
+        <input type="file" id="fileUpload" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt">
+        <ul id="fileList" class="file-list"></ul>
+      </div>
 
-    <label for="user_email">Seu E-mail</label>
-    <input type="email" id="user_email" name="user_email" required placeholder="Digite seu e-mail">
+      <div class="status" id="status"></div>
 
-    <label for="file">Selecione um Arquivo</label>
-    <input type="file" id="file" name="file" required>
+      <button class="whatsapp-button" id="whatsappButton" disabled>Enviar via WhatsApp</button>
+    </div>
+  </div>
 
-    <button type="button" id="sendButton">Enviar</button>
+  <script>
+    // Handle file selection and manage the file list
+    const fileInput = document.getElementById('fileUpload');
+    const fileList = document.getElementById('fileList');
+    const whatsappButton = document.getElementById('whatsappButton');
+    const statusDiv = document.getElementById('status');
 
-    <div class="status" id="status"></div>
-  </form>
+    let selectedFiles = [];
 
-  <script type="text/javascript">
-    // Initialize EmailJS with your public key
-    emailjs.init("u4fUcSd9Yi3exmOiv");  // Replace 'YOUR_PUBLIC_KEY' with your actual public key
-
-    // Handle the form submission
-    document.getElementById("sendButton").addEventListener("click", function () {
-      const statusDiv = document.getElementById("status");
-      const fileInput = document.getElementById("file");
-
-      // Check if a file is selected
-      if (fileInput.files.length === 0) {
-        statusDiv.textContent = "Por favor, selecione um arquivo.";
-        statusDiv.style.color = "red";
+    fileInput.addEventListener('change', function () {
+      const files = Array.from(fileInput.files);
+      if (files.length > 10) {
+        statusDiv.textContent = "Você pode enviar no máximo 10 documentos.";
+        statusDiv.style.color = 'red';
         return;
       }
 
-      // Create the FormData object for the email
-      const formData = new FormData();
-      formData.append("user_name", document.getElementById("user_name").value);
-      formData.append("user_email", document.getElementById("user_email").value);
-      formData.append("file", fileInput.files[0]);
+      selectedFiles = files;
+      fileList.innerHTML = '';  // Clear the file list
 
-      statusDiv.textContent = "Enviando...";
+      files.forEach((file, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${file.name} <button onclick="removeFile(${index})">Remover</button>`;
+        fileList.appendChild(li);
+      });
 
-      // Send the form using EmailJS
-      emailjs.sendForm("service_qeqs8rl", "template_gi6qr30", formData)  // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual values
-        .then(() => {
-          statusDiv.textContent = "E-mail enviado com sucesso!";
-          statusDiv.style.color = "green";
-          document.getElementById("emailForm").reset();  // Reset the form after successful submission
-        })
-        .catch((error) => {
-          console.error("Erro:", error);
-          statusDiv.textContent = "Erro ao enviar o e-mail. Tente novamente.";
-          statusDiv.style.color = "red";
-        });
+      // Enable the WhatsApp button if there are files
+      whatsappButton.disabled = files.length === 0;
+    });
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      fileInput.files = new FileListItems(...selectedFiles);
+      fileList.children[index].remove();
+
+      // Disable the button if no files are left
+      whatsappButton.disabled = selectedFiles.length === 0;
+    }
+
+    // WhatsApp sharing functionality
+    whatsappButton.addEventListener('click', function () {
+      const phoneNumber = '21993872264';  // Replace with the desired phone number (e.g., '1234567890')
+      const message = `Eu gostaria de compartilhar os seguintes documentos com você:\n\n`;
+
+      const filesList = selectedFiles.map(file => file.name).join("\n");
+
+      // Format the WhatsApp URL with the message and documents
+      const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message + filesList)}`;
+
+      window.open(url, '_blank');
+      statusDiv.textContent = "Documentos enviados com sucesso!";
+      statusDiv.style.color = 'green';
     });
   </script>
-  
+
 </body>
 </html>
