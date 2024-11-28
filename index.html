@@ -4,73 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enviar Arquivo por E-mail</title>
+
+  <!-- Incluindo Materialize CSS e JS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto', sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
       background-color: #f4f4f9;
     }
-    form {
+
+    .container {
       max-width: 500px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 50px;
     }
-    form h2 {
+
+    h2 {
+      text-align: center;
       margin-bottom: 20px;
     }
-    form label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    form input, form button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    form button {
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    form button:hover {
-      background-color: #0056b3;
-    }
+
     .status {
-      margin-top: 10px;
-      font-size: 14px;
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .status.success {
+      color: green;
+    }
+
+    .status.error {
+      color: red;
     }
   </style>
 </head>
 <body>
-  <form id="emailForm">
+
+  <!-- Formulário com Materialize -->
+  <div class="container">
     <h2>Enviar Arquivo por E-mail</h2>
-    <label for="user_name">Seu Nome</label>
-    <input type="text" id="user_name" name="user_name" required placeholder="Digite seu nome">
+    <form id="emailForm">
+      
+      <!-- Campo de Nome -->
+      <div class="input-field">
+        <input type="text" id="user_name" name="user_name" required placeholder="Digite seu nome">
+        <label for="user_name">Seu Nome</label>
+      </div>
 
-    <label for="user_email">Seu E-mail</label>
-    <input type="email" id="user_email" name="user_email" required placeholder="Digite seu e-mail">
+      <!-- Campo de E-mail -->
+      <div class="input-field">
+        <input type="email" id="user_email" name="user_email" required placeholder="Digite seu e-mail">
+        <label for="user_email">Seu E-mail</label>
+      </div>
 
-    <label for="file">Selecione um Arquivo</label>
-    <input type="file" id="file" name="file" required>
+      <!-- Campo de Arquivo -->
+      <div class="file-field input-field">
+        <div class="btn">
+          <span>Arquivo</span>
+          <input type="file" id="file" name="file" required>
+        </div>
+        <div class="file-path-wrapper">
+          <input class="file-path validate" type="text" placeholder="Selecione um arquivo">
+        </div>
+      </div>
 
-    <button type="button" id="sendButton">Enviar</button>
+      <!-- Botão de Enviar -->
+      <button type="button" id="sendButton" class="btn waves-effect waves-light">Enviar</button>
+      
+    </form>
+    
+    <!-- Status da Solicitação -->
+    <div id="status" class="status"></div>
+  </div>
 
-    <div class="status" id="status"></div>
-  </form>
-
+  <!-- Inicialização do Materialize -->
   <script>
-    // Inicializa o EmailJS com sua chave pública
-    emailjs.init("u4fUcSd9Yi3exmOiv");  // Substitua 'YOUR_USER_ID' pela sua chave pública do EmailJS
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializando Materialize Components
+      M.AutoInit();
+    });
 
+    // Inicializa o EmailJS com sua chave pública
+    emailjs.init("u4fUcSd9Yi3exmOiv");
+
+    // Evento para o botão de enviar
     document.getElementById("sendButton").addEventListener("click", function () {
       const statusDiv = document.getElementById("status");
       const fileInput = document.getElementById("file");
@@ -78,7 +99,7 @@
       // Verifica se o arquivo está selecionado
       if (fileInput.files.length === 0) {
         statusDiv.textContent = "Por favor, selecione um arquivo.";
-        statusDiv.style.color = "red";
+        statusDiv.classList.add("error");
         return;
       }
 
@@ -91,18 +112,23 @@
       statusDiv.textContent = "Enviando...";
 
       // Envia o formulário usando EmailJS
-      emailjs.sendForm("service_qeqs8rl", "template_gi6qr30", formData)  // Substitua 'YOUR_SERVICE_ID' e 'YOUR_TEMPLATE_ID'
+      emailjs.sendForm("service_qeqs8rl", "template_gi6qr30", formData)
         .then(() => {
           statusDiv.textContent = "E-mail enviado com sucesso!";
-          statusDiv.style.color = "green";
+          statusDiv.classList.remove("error");
+          statusDiv.classList.add("success");
           document.getElementById("emailForm").reset();
         })
         .catch((error) => {
           console.error("Erro:", error);
           statusDiv.textContent = "Erro ao enviar o e-mail. Tente novamente.";
-          statusDiv.style.color = "red";
+          statusDiv.classList.add("error");
         });
     });
   </script>
+
+  <!-- Incluindo Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
 </body>
 </html>
