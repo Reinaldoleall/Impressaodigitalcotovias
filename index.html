@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enviar Arquivo por E-mail</title>
 
-  <!-- Incluindo Materialize CSS e JS -->
+  <!-- Incluindo Materialize CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  
+  <!-- Script do EmailJS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     body {
@@ -81,15 +83,19 @@
     <div id="status" class="status"></div>
   </div>
 
-  <!-- Inicialização do Materialize -->
+  <!-- Inicialização do EmailJS -->
+  <script type="text/javascript">
+    (function(){
+      emailjs.init("u4fUcSd9Yi3exmOiv");  // Substitua pela sua chave pública
+    })();
+  </script>
+
+  <!-- Script de Envio -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Inicializando Materialize Components
       M.AutoInit();
     });
-
-    // Inicializa o EmailJS com sua chave pública
-    emailjs.init("u4fUcSd9Yi3exmOiv");
 
     // Evento para o botão de enviar
     document.getElementById("sendButton").addEventListener("click", function () {
